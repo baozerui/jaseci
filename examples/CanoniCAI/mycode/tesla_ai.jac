@@ -15,7 +15,7 @@ node cai_state {
             new_wlk_ctx["entities"] = visitor.wlk_ctx["entities"];
         }
         visitor.wlk_ctx = new_wlk_ctx;
-    } 
+    }
     can nlu {}
     can process {
         if (visitor.wlk_ctx["prev_state"]): visitor.wlk_ctx["respond"] = true;
@@ -26,6 +26,7 @@ node cai_state {
     }
     can nlg {}
 }
+
 
 node dialogue_state:cai_state {
     can bi_enc.infer;
@@ -42,6 +43,7 @@ node dialogue_state:cai_state {
     }
 
     can extract_entities {
+        // Entity extraction logic will be added a bit later on.
         res = tfm_ner.extract_entity(visitor.question);
         for ent in res {
             ent_type = ent["entity_value"];
@@ -172,6 +174,7 @@ edge entity_transition {
     has entities;
 }
 
+
 graph tesla_ai {
     has anchor dialogue_root;
     spawn {
@@ -195,8 +198,7 @@ graph tesla_ai {
 }
 
 walker talk {
-    has question;
-    has interactive = true;
+    has question, interactive = false;
     has wlk_ctx = {
         "intent": null,
         "entities": {},
@@ -239,3 +241,4 @@ walker init {
         spawn here walker::talk;
     }
 }
+
